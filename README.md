@@ -39,8 +39,9 @@ If you would like to train the model using other DL frameworks, you only need to
 
 ### Getting Started
 
-**To run the server**
+**To run the server** (require python 3)
 ```
+pip install -r requirements.txt
 python server.py
 ```
 Then navigate to `localhost:8800`
