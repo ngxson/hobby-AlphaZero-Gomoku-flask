@@ -97,18 +97,26 @@ def play():
         human_location = [int(y), int(x)]
         human_move = board.location_to_move(human_location)
         board.do_move(human_move)
-        ai_move = mcts_player.get_action(board)
-        board.do_move(ai_move)
         end, winner = board.game_end()
-        new_location = board.move_to_location(ai_move)
-        response = {
-            'move_x': int(new_location[1]),
-            'move_y': int(new_location[0]),
-            'board': board_state_to_array(board, agent),
-            'end': end, 'winner': int(winner)
-        }
-        print(response)
-        return response
+
+        if not end:
+            ai_move = mcts_player.get_action(board)
+            board.do_move(ai_move)
+            new_location = board.move_to_location(ai_move)
+            end, winner = board.game_end()
+            return {
+                'move_x': int(new_location[1]),
+                'move_y': int(new_location[0]),
+                'board': board_state_to_array(board, agent),
+                'end': end, 'winner': int(winner)
+            }
+        else:
+            return {
+                'move_x': -1,
+                'move_y': -1,
+                'board': board_state_to_array(board, agent),
+                'end': end, 'winner': int(winner)
+            }
 
 
 # In[8]:

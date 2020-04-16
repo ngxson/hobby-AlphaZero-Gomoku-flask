@@ -34,6 +34,8 @@
 
 <body>
   <input type="button" value="Reset" id="reset" />
+  &nbsp;&nbsp;&nbsp;
+  <img src="loading.gif" id="loading" />
   <br /><br />
   <div id="gomoku">Please wait...</div>
   <script>
@@ -95,7 +97,9 @@
         LOADING = false;
         END = data.end;
         BOARD = data.board.reverse();
-        renderGomoku(BOARD, data.move_x, data.move_y);
+        if (data.move_x !== -1) {
+          renderGomoku(BOARD, data.move_x, data.move_y);
+        }
         if (END) {
           localStorage.removeItem('uid');
           setTimeout(() => alert('End game'), 100);
@@ -109,6 +113,11 @@
         LOADING = false;
         BOARD = data.board.reverse();
         renderGomoku(BOARD);
+      });
+
+      setInterval(() => {
+        if (LOADING) $('#loading').show();
+        else $('#loading').hide();
       });
     });
   </script>
