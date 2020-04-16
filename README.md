@@ -1,4 +1,12 @@
 ## AlphaZero-Gomoku
+
+```
+This repository is based on the work of @junxiaosong
+The original repo can be found here:
+https://github.com/junxiaosong/AlphaZero_Gomoku
+Thanks for your impressive work !
+```
+
 This is an implementation of the AlphaZero algorithm for playing the simple board game Gomoku (also called Gobang or Five in a Row) from pure self-play training. The game Gomoku is much simpler than Go or chess, so that we can focus on the training scheme of AlphaZero and obtain a pretty good AI model on a single PC in a few hours. 
 
 References:  
@@ -30,6 +38,13 @@ otherwise, force pip to downgrade Theano to 0.7 ``pip install --upgrade theano==
 If you would like to train the model using other DL frameworks, you only need to rewrite policy_value_net.py.
 
 ### Getting Started
+
+**To run the server**
+```
+python server.py
+```
+Then navigate to `localhost:8800`
+
 To play with provided models, run the following script from the directory:  
 ```
 python human_play.py  

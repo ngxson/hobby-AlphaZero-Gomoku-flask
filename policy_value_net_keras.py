@@ -34,7 +34,10 @@ class PolicyValueNet():
         self._loss_train_op()
 
         if model_file:
-            net_params = pickle.load(open(model_file, 'rb'))
+            try:
+                net_params = pickle.load(open(model_file, 'rb'))
+            except:
+                net_params = pickle.load(open(model_file, 'rb'), encoding='bytes')
             self.model.set_weights(net_params)
         
     def create_policy_value_net(self):

@@ -26,7 +26,7 @@ def conv_forward(X, W, b, stride=1, padding=1):
     n_filters, d_filter, h_filter, w_filter = W.shape
     # theano conv2d flips the filters (rotate 180 degree) first
     # while doing the calculation
-    W = W[:, :, ::-1, ::-1]
+    # W = W[:, :, ::-1, ::-1]
     n_x, d_x, h_x, w_x = X.shape
     h_out = (h_x - h_filter + 2 * padding) / stride + 1
     w_out = (w_x - w_filter + 2 * padding) / stride + 1
@@ -50,7 +50,7 @@ def get_im2col_indices(x_shape, field_height,
     # First figure out what the size of the output should be
     N, C, H, W = x_shape
     assert (H + 2 * padding - field_height) % stride == 0
-    assert (W + 2 * padding - field_height) % stride == 0
+    assert (W + 2 * padding - field_width) % stride == 0
     out_height = int((H + 2 * padding - field_height) / stride + 1)
     out_width = int((W + 2 * padding - field_width) / stride + 1)
 
@@ -81,12 +81,29 @@ def im2col_indices(x, field_height, field_width, padding=1, stride=1):
     cols = cols.transpose(1, 2, 0).reshape(field_height * field_width * C, -1)
     return cols
 
+def swapPositions(list, pos1, pos2): 
+    list[pos1], list[pos2] = list[pos2], list[pos1] 
+    return list
 
 class PolicyValueNetNumpy():
     """policy-value network in numpy """
     def __init__(self, board_width, board_height, net_params):
         self.board_width = board_width
         self.board_height = board_height
+        """
+        # convert model from Keras
+        net_params = swapPositions(net_params, 6, 8)
+        net_params = swapPositions(net_params, 7, 9)
+        net_params = swapPositions(net_params, 8, 10)
+        net_params = swapPositions(net_params, 9, 11)
+        net_params = swapPositions(net_params, 8, 12)
+        net_params = swapPositions(net_params, 9, 13)
+        print('params', len(net_params))
+        for i in range(len(net_params)):
+            if net_params[i].ndim == 4:
+                net_params[i] = net_params[i].transpose(3, 2, 0, 1)
+            print(net_params[i].shape)
+        """
         self.params = net_params
 
     def policy_value_fn(self, board):

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>AlphaZero_Gomoku</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #13517d;
+    }
+
+    #gomoku {
+      line-height: 0;
+    }
+
+    #gomoku>img {
+      cursor: pointer;
+      height: 50px;
+      width: 50px;
+    }
+
+    #gomoku>img:hover {
+      background-color: #2184ca;
+    }
+
+    .mark {
+      background-color: rgba(255, 255, 0, 0.25);
+    }
+  </style>
+</head>
+
+<body>
+  <input type="button" value="Reset" id="reset" />
+  <br /><br />
+  <div id="gomoku">Please wait...</div>
+  <script>
+    const TEMPLATE = {
+      'cell': '<img src="$src" onclick="playMove($x, $y)" class="$mark" />'
+    };
+    let UID = localStorage.getItem('uid');
+    let END = false;
+    let LOADING = false;
+    let BOARD = [];
+    if (!UID) {
+      UID = makeid(16);
+      localStorage.setItem('uid', UID);
+    }
+
+    $('#reset').on('click', function () {
+      localStorage.removeItem('uid');
+      window.location.reload();
+    });
+
+    function makeid(length) {
+      var result = '';
+      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var charactersLength = characters.length;
+      for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      return result;
+    }
+
+    function renderGomoku(board, move_x = null, move_y = null) {
+      let html = '';
+      board.forEach((row, y) => {
+        row.forEach((cell, x) => {
+          const player = cell < 0 ? 0 : cell;
+          let cellHtml = TEMPLATE.cell.replace('$src', player + '.png');
+          if (cell == -1) {
+            cellHtml = cellHtml.replace('$x', x);
+            cellHtml = cellHtml.replace('$y', y);
+          } else {
+            cellHtml = cellHtml.replace('$x', 'null');
+            cellHtml = cellHtml.replace('$y', 'null');
+          }
+          cellHtml = cellHtml.replace('$mark', move_x === x && move_y === y ? 'mark' : '');
+          html += cellHtml;
+        });
+        html += '<br/>';
+      });
+      $('#gomoku').html(html);
+    }
+
+    function playMove(x, y) {
+      if (x === null || y === null) return;
+      if (END || LOADING) return;
+      BOARD[y][x] = 1;
+      renderGomoku(BOARD);
+      LOADING = true;
+      $.post('/play?uid=' + UID + '&x=' + x + '&y=' + y, function (data) {
+        LOADING = false;
+        END = data.end;
+        BOARD = data.board.reverse();
+        renderGomoku(BOARD, data.move_x, data.move_y);
+        if (END) {
+          localStorage.removeItem('uid');
+          setTimeout(() => alert('End game'), 100);
+        }
+      });
+    }
+
+    $(document).ready(function () {
+      LOADING = true;
+      $.get('/play?uid=' + UID, function (data) {
+        LOADING = false;
+        BOARD = data.board.reverse();
+        renderGomoku(BOARD);
+      });
+    });
+  </script>
+</body>
+
+</html>
