@@ -39,6 +39,8 @@
   <br /><br />
   <div id="gomoku">Please wait...</div>
   <script>
+    $.ajaxSetup({timeout:120000});
+
     const TEMPLATE = {
       'cell': '<img src="$src" onclick="playMove($x, $y)" class="$mark" />'
     };
@@ -104,21 +106,29 @@
           localStorage.removeItem('uid');
           setTimeout(() => alert('End game'), 100);
         }
-      });
+      }).fail(function () {
+        setTimeout(getBoardState, 5000);
+      });;
     }
 
-    $(document).ready(function () {
+    function getBoardState() {
       LOADING = true;
       $.get('/play?uid=' + UID, function (data) {
         LOADING = false;
         BOARD = data.board.reverse();
         renderGomoku(BOARD);
+      }).fail(function () {
+        setTimeout(getBoardState, 5000);
       });
+    }
+
+    $(document).ready(function () {
+      getBoardState();
 
       setInterval(() => {
         if (LOADING) $('#loading').show();
         else $('#loading').hide();
-      });
+      }, 500);
     });
   </script>
 </body>

@@ -129,5 +129,5 @@ def static_file(path):
 def index():
     return app.send_static_file('index.html')
 
-app.run(host='0.0.0.0', port=os.getenv('PORT', 8800))
+#app.run(host='0.0.0.0', port=os.getenv('PORT', 8800))
 
