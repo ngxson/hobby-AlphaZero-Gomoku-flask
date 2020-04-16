@@ -32,7 +32,7 @@ mcts_player = MCTSPlayer(best_policy.policy_value_fn, c_puct=5, n_playout=400)
 boards = {}
 agents = {}
 app = Flask(__name__)
-app._static_folder = 'D:/tf/AlphaZero_Gomoku/static'
+app._static_folder = os.getcwd() + '/static'
 
 
 # In[4]:
